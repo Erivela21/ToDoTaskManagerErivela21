@@ -7,9 +7,22 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>To-Do List Manager</h1>
+    <header class="prime-header">
+        <div class="prime-banner">
+            <img src="../transformers-age-of-extinction-optimus-prime1.jpg" alt="Optimus Prime" class="prime-banner-img">
+        </div>
+        <h1>Optimus Prime To-Do Matrix</h1>
+        <p class="subtitle">"Freedom is the right of all sentient beings."</p>
+    </header>
     <div id="task-form">
-        <!-- Minimal form for adding/editing tasks -->
+        <input type="text" id="title" placeholder="Title" required />
+        <input type="text" id="description" placeholder="Description" />
+        <input type="date" id="due_date" />
+        <select id="status">
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+        </select>
+        <button onclick="addTask()">Add Task</button>
     </div>
     <div id="task-list">
         <!-- Task list will be rendered here -->

@@ -84,4 +84,9 @@ def delete_task(task_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Allow host/port override via environment variables for easier deployment / LAN access
+    host = os.environ.get('TASK_API_HOST', '0.0.0.0')
+    port = int(os.environ.get('TASK_API_PORT', '5000'))
+    debug = os.environ.get('TASK_API_DEBUG', '1') == '1'
+    # Use use_reloader False to avoid duplicate processes when launched via scripts
+    app.run(host=host, port=port, debug=debug, use_reloader=False)

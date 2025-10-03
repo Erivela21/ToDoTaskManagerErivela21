@@ -1,32 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do List Manager</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Ultimate To-Do Task Manager</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <header class="prime-header">
-        <div class="prime-banner">
-            <img src="../transformers-age-of-extinction-optimus-prime1.jpg" alt="Optimus Prime" class="prime-banner-img">
+  <div class="logo-wrapper" onclick="showSection('tasks')" title="Autobots, roll out!">
+    <img src="../autobotlogo.png" alt="Autobot Logo" class="autobot-logo" />
+  </div>
+  <header class="main-header">
+    <h1>The Ultimate To-Do Task Manager</h1>
+    <nav class="main-nav">
+      <button class="nav-btn active" data-section="tasks" onclick="showSection('tasks')">Tasks</button>
+  <button class="nav-btn" data-section="progress" onclick="showSection('progress')">Progress <span id="progress-badge" class="nav-badge" style="display:none;">NEW</span></button>
+  <button class="nav-btn" data-section="soon" onclick="showSection('soon')">Coming Soon</button>
+      <div class="nav-spacer"></div>
+      <button id="sfx-toggle" class="nav-icon-btn" type="button" onclick="toggleSFX()" title="Toggle Sound">
+        <img id="sfx-icon" src="../VOLUME.png" alt="Sound On" onerror="this.onerror=null; this.src='../volume.png';" />
+      </button>
+    </nav>
+  </header>
+  <!-- HUD bar removed per request -->
+
+  <!-- Offline banner now optional; hidden by default and only shown on Tasks tab -->
+  <div id="offline-banner" class="offline-banner" style="display:none;">
+    <span class="offline-text">Offline mode (changes queued)</span>
+    <button class="retry-btn" onclick="retryConnection()">Retry</button>
+  </div>
+
+  <div id="success-overlay" class="success-overlay" style="display:none;">
+    <img src="../ddqjc5n-91719424-5624-4b58-bd4b-8cfa1647e1cb.gif" alt="Success!" class="success-gif" />
+  </div>
+
+  <main>
+
+    <section id="tasks" class="panel active">
+      <div class="tasks-layout">
+        <div class="panel-glass task-manage-panel">
+          <h2>Manage Tasks</h2>
+          <form id="task-form" class="task-form" onsubmit="addTask(event)">
+            <input id="title" type="text" placeholder="Title" required />
+            <input id="description" type="text" placeholder="Description" />
+            <input id="due_date" type="date" />
+            <button type="submit" class="primary-action">Add Task</button>
+          </form>
+          <div class="filters-bar">
+            <div class="filter-group">
+              <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">All</button>
+              <button class="filter-btn" data-filter="pending" onclick="setFilter('pending')">Active</button>
+              <button class="filter-btn" data-filter="completed" onclick="setFilter('completed')">Completed</button>
+            </div>
+            <div class="bulk-group">
+              <button class="bulk-btn" onclick="markAllCompleted()">Mark All Completed</button>
+              <button class="bulk-btn danger" onclick="clearCompleted()">Clear Completed</button>
+            </div>
+          </div>
+          <p id="empty-hint" class="empty-hint" style="display:none;">Start by creating your first task.</p>
         </div>
-        <h1>Optimus Prime To-Do Matrix</h1>
-        <p class="subtitle">"Freedom is the right of all sentient beings."</p>
-    </header>
-    <div id="task-form">
-        <input type="text" id="title" placeholder="Title" required />
-        <input type="text" id="description" placeholder="Description" />
-        <input type="date" id="due_date" />
-        <select id="status">
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
-        </select>
-        <button onclick="addTask()">Add Task</button>
-    </div>
-    <div id="task-list">
-        <!-- Task list will be rendered here -->
-    </div>
-    <script src="app.js"></script>
+        <div class="panel-glass task-list-panel">
+          <h2>Your Tasks</h2>
+          <ul id="tasks-list" class="tasks-list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="progress" class="panel">
+      <div class="panel-glass progress-panel">
+        <h2>Achievements</h2>
+        <p class="progress-intro">Complete tasks to unlock iconic Transformers. Your productivity fuels the Matrix!</p>
+        <div class="achievements-strip-wrapper"><ul id="achievements-strip" class="achievements-strip" aria-label="Achievements Grid"></ul></div>
+      </div>
+    </section>
+
+    <section id="soon" class="panel">
+      <div class="panel-glass center-info comingsoon-panel">
+        <div class="epic-coming-wrapper">
+          <h2 class="epic-title" data-text="INCOMING TRANSMISSION">INCOMING TRANSMISSION</h2>
+          <p class="epic-hero">Matrix Signal Detected</p>
+          <p class="epic-sub">The mystery awaits us. The Autobots are constructing and polishing the cybertronian space, future updates coming soon...</p>
+          <p class="epic-tail">Stay tuned, <span class="charge-pulse">Autobot</span></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
 </body>
 </html>

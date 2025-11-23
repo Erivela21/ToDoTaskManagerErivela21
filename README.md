@@ -167,6 +167,9 @@ The frontend auto-detects the hostname and adjusts the API URL accordingly.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
+| GET | `/` | API information and status |
+| GET | `/health` | Health check endpoint |
+| GET | `/metrics` | Performance metrics |
 | GET | `/tasks` | Retrieve all tasks |
 | POST | `/tasks` | Create a new task |
 | PUT | `/tasks/<id>` | Update existing task |
@@ -207,6 +210,63 @@ Response (200):
   }
 ]
 ```
+
+## Monitoring & Observability
+
+### Health Checks
+The application includes a `/health` endpoint for monitoring:
+```bash
+curl http://localhost:5000/health
+```
+
+**Response:**
+```json
+{
+  "status": "healthy",
+  "timestamp": "2025-11-23T14:30:00",
+  "version": "1.0.0",
+  "service": "Task Manager API"
+}
+```
+
+### Performance Metrics
+Access real-time performance metrics at `/metrics`:
+```bash
+curl http://localhost:5000/metrics
+```
+
+**Metrics include:**
+- Total request count
+- Error count and error rate
+- Average latency (milliseconds)
+- Per-endpoint statistics
+- Application uptime
+
+### Prometheus Integration
+The metrics endpoint is compatible with Prometheus. To set up monitoring:
+
+1. **Install Prometheus** (or use Docker):
+   ```bash
+   docker run -d -p 9090:9090 -v ./prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
+   ```
+
+2. **Configure scraping** - The included `prometheus.yml` file is pre-configured to scrape the Task Manager API at `localhost:5000/metrics` every 10 seconds.
+
+3. **Access Prometheus UI**: Open `http://localhost:9090`
+
+### Grafana Dashboard
+A pre-configured Grafana dashboard is included in `grafana-dashboard.json` with:
+- Request rate graphs
+- Latency percentiles (p50, p95)
+- Error rate tracking
+- Uptime statistics
+- Per-endpoint performance breakdown
+
+**To import the dashboard:**
+1. Install Grafana: `docker run -d -p 3000:3000 grafana/grafana`
+2. Open `http://localhost:3000` (default login: admin/admin)
+3. Add Prometheus as data source (http://localhost:9090)
+4. Import `grafana-dashboard.json`
 
 ## Troubleshooting
 

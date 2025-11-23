@@ -1,91 +1,471 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Ultimate To-Do Task Manager</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prime | Productivity Command Center</title>
+  <link rel="stylesheet" href="style-nexus.css" />
+  <link rel="stylesheet" href="themes.css" />
+  <link rel="stylesheet" href="achievement-enhancements.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
-  <div class="logo-wrapper" onclick="showSection('tasks')" title="Autobots, roll out!">
-    <img src="../autobotlogo.png" alt="Autobot Logo" class="autobot-logo" />
+<body data-theme="default">
+  <!-- SVG Definitions for gradients -->
+  <svg width="0" height="0" style="position:absolute;">
+    <defs>
+      <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#00f0ff;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#ff00ff;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- Background effects layer -->
+  <div class="bg-effects">
+    <div class="grid-overlay"></div>
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+    <div class="gradient-orb orb-3"></div>
   </div>
-  <header class="main-header">
-    <h1>The Ultimate To-Do Task Manager</h1>
-    <nav class="main-nav">
-      <button class="nav-btn active" data-section="tasks" onclick="showSection('tasks')">Tasks</button>
-  <button class="nav-btn" data-section="progress" onclick="showSection('progress')">Progress <span id="progress-badge" class="nav-badge" style="display:none;">NEW</span></button>
-  <button class="nav-btn" data-section="soon" onclick="showSection('soon')">Coming Soon</button>
-      <div class="nav-spacer"></div>
-      <button id="sfx-toggle" class="nav-icon-btn" type="button" onclick="toggleSFX()" title="Toggle Sound">
-        <img id="sfx-icon" src="../VOLUME.png" alt="Sound On" onerror="this.onerror=null; this.src='../volume.png';" />
+
+  <!-- Main Navigation -->
+  <nav class="nexus-nav" role="navigation" aria-label="Main navigation">
+    <div class="nav-brand" onclick="showSection('dashboard')" data-easter-egg="transformers">
+      <div class="brand-icon">
+        <img src="assets/autobotlogo.png" alt="Autobot" style="width: 100%; height: 100%; object-fit: contain;">
+      </div>
+      <span class="brand-text">PRIME</span>
+    </div>
+    
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-section="dashboard" onclick="showSection('dashboard')" data-hotkey="1">
+        <span class="tab-icon">📊</span>
+        <span class="tab-label">Dashboard</span>
+        <span class="tab-glow"></span>
       </button>
-    </nav>
-  </header>
-  <!-- HUD bar removed per request -->
+      <button class="nav-tab" data-section="tasks" onclick="showSection('tasks')" data-hotkey="2">
+        <span class="tab-icon">✓</span>
+        <span class="tab-label">Tasks</span>
+        <span class="tab-glow"></span>
+      </button>
+      <button class="nav-tab" data-section="achievements" onclick="showSection('achievements')" data-hotkey="3">
+        <span class="tab-icon">🏆</span>
+        <span class="tab-label">Achievements</span>
+        <span class="tab-badge" id="achievement-badge" style="display:none;">!</span>
+        <span class="tab-glow"></span>
+      </button>
+      <button class="nav-tab" data-section="settings" onclick="showSection('settings')" data-hotkey="4">
+        <span class="tab-icon">⚙</span>
+        <span class="tab-label">Settings</span>
+        <span class="tab-glow"></span>
+      </button>
+    </div>
 
-  <!-- Offline banner now optional; hidden by default and only shown on Tasks tab -->
-  <div id="offline-banner" class="offline-banner" style="display:none;">
-    <span class="offline-text">Offline mode (changes queued)</span>
-    <button class="retry-btn" onclick="retryConnection()">Retry</button>
+    <div class="nav-controls">
+      <button id="sfx-toggle" class="control-btn" type="button" onclick="toggleSFX()" title="Toggle Sound (S)" aria-label="Toggle sound effects">
+        <img id="sfx-icon" src="assets/VOLUME.png" alt="Sound On" class="control-icon" />
+      </button>
+      <div class="user-level" id="user-level-display" title="Your current rank">
+        <span class="level-label">LVL</span>
+        <span class="level-value" id="user-level">1</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Status notifications -->
+  <div id="notification-container" class="notification-container"></div>
+  
+  <!-- Offline banner -->
+  <div id="offline-banner" class="status-banner offline-banner" style="display:none;">
+    <span class="status-icon">⚠</span>
+    <span class="status-text">Offline mode - Changes queued for sync</span>
+    <button class="status-btn" onclick="retryConnection()">Retry Connection</button>
   </div>
 
+  <!-- Success overlay with particle effects -->
   <div id="success-overlay" class="success-overlay" style="display:none;">
-    <img src="../ddqjc5n-91719424-5624-4b58-bd4b-8cfa1647e1cb.gif" alt="Success!" class="success-gif" />
+    <div class="success-content">
+      <div class="success-particles"></div>
+      <img src="assets/ddqjc5n-91719424-5624-4b58-bd4b-8cfa1647e1cb.gif" alt="Success!" class="success-gif" />
+      <div class="success-text" id="success-text">Task Completed!</div>
+    </div>
   </div>
 
-  <main>
+  <main class="nexus-main">
 
-    <section id="tasks" class="panel active">
-      <div class="tasks-layout">
-        <div class="panel-glass task-manage-panel">
-          <h2>Manage Tasks</h2>
-          <form id="task-form" class="task-form" onsubmit="addTask(event)">
-            <input id="title" type="text" placeholder="Title" required />
-            <input id="description" type="text" placeholder="Description" />
-            <input id="due_date" type="date" />
-            <button type="submit" class="primary-action">Add Task</button>
-          </form>
-          <div class="filters-bar">
-            <div class="filter-group">
-              <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">All</button>
-              <button class="filter-btn" data-filter="pending" onclick="setFilter('pending')">Active</button>
-              <button class="filter-btn" data-filter="completed" onclick="setFilter('completed')">Completed</button>
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="section-panel" style="display:none;">
+      <div class="section-header">
+        <h1 class="section-title">Command Center</h1>
+        <p class="section-subtitle">Your productivity at a glance</p>
+      </div>
+
+      <div class="dashboard-grid">
+        <!-- Stats Overview -->
+        <div class="dash-card stats-card">
+          <h3 class="card-title">Statistics</h3>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-value" id="dash-total">0</div>
+              <div class="stat-label">Total Tasks</div>
             </div>
-            <div class="bulk-group">
-              <button class="bulk-btn" onclick="markAllCompleted()">Mark All Completed</button>
-              <button class="bulk-btn danger" onclick="clearCompleted()">Clear Completed</button>
+            <div class="stat-item">
+              <div class="stat-value" id="dash-completed">0</div>
+              <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="dash-pending">0</div>
+              <div class="stat-label">Active</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="dash-streak">0</div>
+              <div class="stat-label">Day Streak</div>
             </div>
           </div>
-          <p id="empty-hint" class="empty-hint" style="display:none;">Start by creating your first task.</p>
         </div>
-        <div class="panel-glass task-list-panel">
-          <h2>Your Tasks</h2>
-          <ul id="tasks-list" class="tasks-list"></ul>
+
+        <!-- Progress Chart -->
+        <div class="dash-card progress-card">
+          <h3 class="card-title">Completion Rate</h3>
+          <div class="radial-progress-container">
+            <svg class="radial-progress" viewBox="0 0 200 200">
+              <circle class="progress-bg" cx="100" cy="100" r="85" />
+              <circle class="progress-fill" id="dash-progress-circle" cx="100" cy="100" r="85" />
+            </svg>
+            <div class="progress-center">
+              <div class="progress-value" id="dash-progress-value">0%</div>
+              <div class="progress-label">Complete</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- XP & Level -->
+        <div class="dash-card xp-card">
+          <h3 class="card-title">Experience</h3>
+          <div class="xp-display">
+            <div class="xp-level">
+              <span class="xp-level-label">LEVEL</span>
+              <span class="xp-level-value" id="dash-level">1</span>
+            </div>
+            <div class="xp-bar-container">
+              <div class="xp-bar">
+                <div class="xp-bar-fill" id="dash-xp-bar" style="width:0%"></div>
+              </div>
+              <div class="xp-text">
+                <span id="dash-xp-current">0</span> / <span id="dash-xp-next">100</span> XP
+              </div>
+            </div>
+            <div class="xp-rank" id="dash-rank">Recruit</div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="dash-card activity-card">
+          <h3 class="card-title">Recent Activity</h3>
+          <ul id="dash-activity" class="activity-list">
+            <li class="activity-item empty">No recent activity</li>
+          </ul>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="dash-card quick-actions-card">
+          <h3 class="card-title">Quick Actions</h3>
+          <div class="quick-actions">
+            <button class="quick-btn" onclick="showSection('tasks'); focusTaskInput()">
+              <span class="quick-icon">➕</span>
+              <span class="quick-label">New Task</span>
+            </button>
+            <button class="quick-btn" onclick="showSection('achievements')">
+              <span class="quick-icon">🏆</span>
+              <span class="quick-label">Achievements</span>
+            </button>
+            <button class="quick-btn" onclick="filterTasksByTag('urgent')">
+              <span class="quick-icon">🔥</span>
+              <span class="quick-label">Urgent</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Upcoming Tasks Preview -->
+        <div class="dash-card upcoming-card">
+          <h3 class="card-title">Upcoming</h3>
+          <ul id="dash-upcoming" class="upcoming-list">
+            <li class="upcoming-item empty">No upcoming tasks</li>
+          </ul>
         </div>
       </div>
     </section>
 
-    <section id="progress" class="panel">
-      <div class="panel-glass progress-panel">
-        <h2>Achievements</h2>
-        <p class="progress-intro">Complete tasks to unlock iconic Transformers. Your productivity fuels the Matrix!</p>
-        <div class="achievements-strip-wrapper"><ul id="achievements-strip" class="achievements-strip" aria-label="Achievements Grid"></ul></div>
+    <!-- Tasks Section -->
+    <section id="tasks" class="section-panel active">
+      <div class="section-header">
+        <h1 class="section-title">Task Management</h1>
+        <p class="section-subtitle">Organize and conquer your objectives</p>
+      </div>
+
+      <div class="tasks-container">
+        <!-- Task Input Panel -->
+        <div class="task-input-panel nexus-card">
+          <h3 class="panel-title">Create Task</h3>
+          <form id="task-form" class="task-form" onsubmit="addTask(event)">
+            <div class="form-group">
+              <label for="title" class="form-label">Title</label>
+              <input id="title" type="text" class="form-input" placeholder="Enter task title..." required autocomplete="off" />
+            </div>
+            <div class="form-group">
+              <label for="description" class="form-label">Description</label>
+              <textarea id="description" class="form-input form-textarea" placeholder="Add details..." rows="2"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="due_date" class="form-label">Due Date</label>
+                <input id="due_date" type="date" class="form-input" />
+              </div>
+              <div class="form-group">
+                <label for="due_time" class="form-label">Due Time</label>
+                <input id="due_time" type="time" class="form-input" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="task_priority" class="form-label">Priority</label>
+                <select id="task_priority" class="form-input">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                  <option value="critical">Critical</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="task_tags" class="form-label">Tags</label>
+              <div class="tags-input-container">
+                <div id="tags-display" class="tags-display"></div>
+                <input id="task_tags" type="text" class="form-input tags-input" placeholder="Type and press Enter..." />
+              </div>
+              <div class="tag-suggestions">
+                <button type="button" class="tag-suggestion" onclick="addTagFromSuggestion('work')">work</button>
+                <button type="button" class="tag-suggestion" onclick="addTagFromSuggestion('personal')">personal</button>
+                <button type="button" class="tag-suggestion" onclick="addTagFromSuggestion('urgent')">urgent</button>
+                <button type="button" class="tag-suggestion" onclick="addTagFromSuggestion('project')">project</button>
+              </div>
+            </div>
+            <button type="submit" class="btn-primary btn-create">
+              <span class="btn-icon">+</span>
+              <span class="btn-text">Create Task</span>
+              <span class="btn-glow"></span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Task List Panel -->
+        <div class="task-list-panel nexus-card">
+          <div class="panel-header">
+            <h3 class="panel-title">Active Tasks</h3>
+            <div class="panel-actions">
+              <div class="view-toggle">
+                <button class="view-btn active" data-view="list" onclick="setTaskView('list')" title="List view">☰</button>
+                <button class="view-btn" data-view="grid" onclick="setTaskView('grid')" title="Grid view">⊞</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filters & Search -->
+          <div class="task-controls">
+            <div class="search-box">
+              <input type="text" id="task-search" class="search-input" placeholder="Search tasks..." oninput="searchTasks(this.value)" />
+              <span class="search-icon">🔍</span>
+            </div>
+            <div class="filter-pills">
+              <button class="filter-pill active" data-filter="all" onclick="setFilter('all')">All</button>
+              <button class="filter-pill" data-filter="pending" onclick="setFilter('pending')">Active</button>
+              <button class="filter-pill" data-filter="completed" onclick="setFilter('completed')">Done</button>
+            </div>
+            <div class="tag-filters" id="tag-filters"></div>
+          </div>
+
+          <!-- Task List with drag-drop -->
+          <div class="task-list-wrapper" id="task-list-wrapper">
+            <ul id="tasks-list" class="tasks-list" data-view="list"></ul>
+            <div id="empty-hint" class="empty-state" style="display:none;">
+              <div class="empty-icon">📋</div>
+              <div class="empty-text">No tasks yet</div>
+              <div class="empty-subtitle">Create your first task to get started</div>
+            </div>
+          </div>
+
+          <!-- Bulk Actions -->
+          <div class="bulk-actions">
+            <button class="bulk-btn" onclick="markAllCompleted()">
+              <span class="bulk-icon">✓</span> Mark All Done
+            </button>
+            <button class="bulk-btn danger" onclick="clearCompleted()">
+              <span class="bulk-icon">✕</span> Clear Completed
+            </button>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section id="soon" class="panel">
-      <div class="panel-glass center-info comingsoon-panel">
-        <div class="epic-coming-wrapper">
-          <h2 class="epic-title" data-text="INCOMING TRANSMISSION">INCOMING TRANSMISSION</h2>
-          <p class="epic-hero">Matrix Signal Detected</p>
-          <p class="epic-sub">The mystery awaits us. The Autobots are constructing and polishing the cybertronian space, future updates coming soon...</p>
-          <p class="epic-tail">Stay tuned, <span class="charge-pulse">Autobot</span></p>
+    <!-- Achievements Section -->
+    <section id="achievements" class="section-panel">
+      <div class="section-header">
+        <h1 class="section-title">Achievements</h1>
+        <p class="section-subtitle">Unlock legendary status through productivity</p>
+      </div>
+
+      <div class="achievements-container">
+        <!-- Achievement Progress Overview -->
+        <div class="achievement-progress-panel nexus-card">
+          <div class="achievement-stats">
+            <div class="stat-item">
+              <div class="stat-value" id="ach-unlocked">0</div>
+              <div class="stat-label">Unlocked</div>
+            </div>
+            <div class="progress-bar-horizontal">
+              <div class="progress-bar-fill" id="ach-progress-bar" style="width:0%"></div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="ach-total">10</div>
+              <div class="stat-label">Total</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Achievement Cards Grid -->
+        <div id="achievements-grid" class="achievements-grid"></div>
+      </div>
+    </section>
+
+    <!-- Settings Section -->
+    <section id="settings" class="section-panel">
+      <div class="section-header">
+        <h1 class="section-title">Settings</h1>
+        <p class="section-subtitle">Customize your experience</p>
+      </div>
+
+      <div class="settings-container">
+        <div class="settings-group nexus-card">
+          <h3 class="settings-title">Appearance</h3>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-label">Theme</div>
+              <div class="setting-desc">Choose your visual style</div>
+            </div>
+            <select id="theme-select" class="setting-select" onchange="changeTheme(this.value)">
+              <option value="default">Default (Dark)</option>
+              <option value="cyberpunk">Cyberpunk</option>
+              <option value="matrix">Matrix</option>
+              <option value="transformers">Transformers</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-label">Animations</div>
+              <div class="setting-desc">Enable micro-interactions</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="animations-toggle" checked onchange="toggleAnimations(this.checked)" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-group nexus-card">
+          <h3 class="settings-title">Audio</h3>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-label">Sound Effects</div>
+              <div class="setting-desc">Play sounds on interactions</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="sound-toggle" checked onchange="toggleSound(this.checked)" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-label">Volume</div>
+              <div class="setting-desc">Adjust sound level</div>
+            </div>
+            <input type="range" id="volume-slider" class="setting-range" min="0" max="100" value="55" oninput="setVolume(this.value)" />
+          </div>
+        </div>
+
+        <div class="settings-group nexus-card">
+          <h3 class="settings-title">Productivity</h3>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-label">Smart Suggestions</div>
+              <div class="setting-desc">AI-powered task recommendations</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="suggestions-toggle" onchange="toggleSuggestions(this.checked)" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-label">Calendar Sync</div>
+              <div class="setting-desc">Sync tasks with calendar</div>
+            </div>
+            <button class="btn-secondary" onclick="syncCalendar()">Connect Calendar</button>
+          </div>
+        </div>
+
+        <div class="settings-group nexus-card">
+          <h3 class="settings-title">Data</h3>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-label">Export Data</div>
+              <div class="setting-desc">Download your tasks as JSON</div>
+            </div>
+            <button class="btn-secondary" onclick="exportData()">Export</button>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-label">Reset Progress</div>
+              <div class="setting-desc">Clear all data and achievements</div>
+            </div>
+            <button class="btn-danger" onclick="resetAllData()">Reset</button>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
-  <script src="app.js"></script>
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-overlay" style="display:none;">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Synchronizing...</div>
+  </div>
+
+  <!-- Achievement Modal -->
+  <div id="achievement-modal" class="achievement-modal">
+    <div class="achievement-modal-content">
+      <div class="achievement-modal-image">
+        <img id="achievement-modal-img" src="" alt="Achievement">
+        <div class="achievement-flames">
+          <div class="flame"></div>
+          <div class="flame"></div>
+          <div class="flame"></div>
+          <div class="flame"></div>
+          <div class="flame"></div>
+          <div class="flame"></div>
+          <div class="flame"></div>
+          <div class="flame"></div>
+          <div class="flame"></div>
+          <div class="flame"></div>
+        </div>
+      </div>
+      <h2 id="achievement-modal-title" class="achievement-modal-title"></h2>
+      <p id="achievement-modal-desc" class="achievement-modal-desc"></p>
+      <button class="achievement-modal-close" onclick="closeAchievementModal()">Continue</button>
+    </div>
+  </div>
+
+  <script src="app-nexus.js"></script>
 </body>
 </html>

@@ -4,7 +4,7 @@ html, body { height:100%; font-family:'Orbitron', 'Segoe UI', Tahoma, sans-serif
 body { background:#000; overflow:hidden; }
 
 /* FULLSCREEN OPTIMUS BACKGROUND */
-body::before { content:''; position:fixed; inset:0; background:var(--dyn-bg, url('../optimusprimephoto.jpg')) center center/cover no-repeat fixed; filter:brightness(.6) saturate(1.1); z-index:-3; }
+body::before { content:''; position:fixed; inset:0; background:var(--dyn-bg, url('assets/optimusprimephoto.jpg')) center center/cover no-repeat fixed; filter:brightness(.6) saturate(1.1); z-index:-3; }
 body::after { content:''; position:fixed; inset:0; background:radial-gradient(circle at 30% 20%, rgba(0,0,0,0.55), rgba(0,0,0,0.9)), repeating-linear-gradient( to bottom, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 2px, transparent 4px ); mix-blend-mode:overlay; opacity:.9; animation:scanFade 14s linear infinite; z-index:-2; }
 
 /* LOGO */
@@ -314,9 +314,9 @@ body::before { filter:brightness(.68) saturate(1.15); }
 body::after { opacity:.8; }
 
 /* Alternate backgrounds per tab (expects images in root one directory up) */
-body.bg-optimus::before { background-image:url('../optimusprimephoto.jpg'); }
-body.bg-shockwave::before { background-image:url('../shockwavephoto.jpg'); }
-body.bg-megatron::before { background-image:url('../megatronphoto.jpg'); }
+body.bg-optimus::before { background-image:url('assets/optimusprimephoto.jpg'); }
+body.bg-shockwave::before { background-image:url('assets/shockwavephoto.jpg'); }
+body.bg-megatron::before { background-image:url('assets/megatronphoto.jpg'); }
 
 /* Character slide-in layer */
 .character-slide { position:fixed; bottom:0; right:-40%; width:40%; max-width:620px; height:80%; background-position:bottom right; background-size:contain; background-repeat:no-repeat; pointer-events:none; z-index:45; filter:drop-shadow(0 0 25px rgba(0,180,255,0.35)); opacity:0; }

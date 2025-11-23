@@ -1,0 +1,235 @@
+/**
+ * PRIME ACHIEVEMENT CARD ENHANCEMENTS
+ * Ensures emoji icons display properly in achievement cards
+ */
+
+.achievement-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.achievement-card:hover {
+  transform: translateY(-5px);
+}
+
+.achievement-card.locked {
+  cursor: not-allowed;
+  opacity: 0.5;
+  filter: grayscale(100%);
+}
+
+.achievement-card.locked:hover {
+  transform: none;
+}
+
+.achievement-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 0 10px var(--color-primary));
+}
+
+.achievement-card.unlocked .achievement-icon {
+  animation: iconGlow 2s ease-in-out infinite;
+}
+
+@keyframes iconGlow {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 10px var(--color-primary));
+  }
+  50% {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 20px var(--color-primary)) drop-shadow(0 0 30px var(--color-secondary));
+  }
+}
+
+/* Click indicator for unlocked cards */
+.achievement-card.unlocked::after {
+  content: '🔍 Click to view';
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.achievement-card.unlocked:hover::after {
+  opacity: 1;
+}
+
+/* Achievement modal click outside hint */
+.achievement-modal::before {
+  content: 'Click anywhere to close';
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  opacity: 0;
+  transition: opacity 0.5s ease 4s;
+  z-index: 100;
+}
+
+.achievement-modal-content.reveal-complete ~ .achievement-modal::before {
+  opacity: 0.7;
+}
+
+/* Epic screen flash on reveal */
+.achievement-modal-content::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, 
+    rgba(255, 255, 255, 0.9) 0%, 
+    rgba(0, 240, 255, 0.5) 20%, 
+    rgba(255, 0, 255, 0.3) 40%,
+    transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+  border-radius: 50%;
+}
+
+.achievement-modal-content.reveal-complete::before {
+  animation: explosionFlash 0.8s ease-out;
+}
+
+@keyframes explosionFlash {
+  0% { 
+    opacity: 0; 
+    transform: translate(-50%, -50%) scale(0.1);
+  }
+  30% { 
+    opacity: 1; 
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% { 
+    opacity: 0; 
+    transform: translate(-50%, -50%) scale(2.5);
+  }
+}
+
+/* Tension-building pulse effect during reveal */
+.achievement-modal-image::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid var(--color-primary);
+  opacity: 0;
+  animation: tensionPulse 1.5s ease-in-out infinite;
+  animation-delay: 0.5s;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.achievement-modal-content.reveal-complete .achievement-modal-image::before {
+  animation: none;
+  opacity: 0;
+}
+
+@keyframes tensionPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0.4;
+    border-color: var(--color-secondary);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.6);
+    opacity: 0;
+  }
+}
+
+/* Screen shake during peak tension */
+.achievement-modal-content {
+  animation: tensionShake 0.1s ease-in-out;
+  animation-delay: 2.8s;
+  animation-iteration-count: 5;
+}
+
+.achievement-modal-content.reveal-complete {
+  animation: none;
+}
+
+@keyframes tensionShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px) translateY(2px); }
+  75% { transform: translateX(3px) translateY(-2px); }
+}
+
+/* Make sure flames are positioned correctly */
+.achievement-modal-image {
+  position: relative;
+  display: inline-block;
+}
+
+.achievement-flames {
+  z-index: 1;
+}
+
+.achievement-modal-image img {
+  position: relative;
+  z-index: 2;
+}
+
+/* Theme-specific achievement enhancements */
+body[data-theme="cyberpunk"] .achievement-modal-image {
+  filter: drop-shadow(0 0 40px #ffed4e);
+}
+
+body[data-theme="matrix"] .achievement-modal-image {
+  filter: drop-shadow(0 0 40px #ff0000);
+}
+
+body[data-theme="transformers"] .achievement-modal-image {
+  filter: drop-shadow(0 0 40px #00ccff) drop-shadow(0 0 60px #ff00ff);
+}
+
+/* Prevent text selection on achievement cards */
+.achievement-card {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Achievement modal responsive improvements */
+@media (max-width: 480px) {
+  .achievement-modal-content {
+    padding: 2rem 1rem;
+  }
+  
+  .achievement-modal-image {
+    width: 250px;
+    height: 250px;
+  }
+  
+  .achievement-modal-title {
+    font-size: 1.5rem;
+  }
+  
+  .achievement-modal-desc {
+    font-size: 1rem;
+  }
+  
+  .flame {
+    width: 30px;
+    height: 60px;
+  }
+}

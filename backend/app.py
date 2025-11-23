@@ -1,92 +1,142 @@
-
-
+"""
+Task Manager API - Main application file.
+Refactored to follow SOLID principles with service layer separation.
+"""
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import os
-import json
+from datetime import datetime
 
+from config import get_config
+from services import TaskService
+from monitoring import metrics_collector, track_metrics
+
+# Initialize Flask app with configuration
+config = get_config()
 app = Flask(__name__)
-CORS(app)
+app.config.from_object(config)
+CORS(app, origins=config.CORS_ORIGINS)
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), 'tasks.json')
-
-def load_tasks():
-    if not os.path.exists(DATA_PATH):
-        return []
-    with open(DATA_PATH, 'r', encoding='utf-8') as f:
-        try:
-            return json.load(f)
-        except Exception:
-            return []
-
-def save_tasks(tasks):
-    with open(DATA_PATH, 'w', encoding='utf-8') as f:
-        json.dump(tasks, f, indent=2)
-
-
-def get_next_id(tasks):
-    if not tasks:
-        return 1
-    return max(task['id'] for task in tasks) + 1
+# Initialize task service
+task_service = TaskService(config.DATA_PATH)
 
 @app.route('/')
+@track_metrics
 def index():
-    return 'To-Do List Manager API is running.'
+    """Root endpoint - API information."""
+    return jsonify({
+        'name': config.APP_NAME,
+        'version': config.APP_VERSION,
+        'status': 'running'
+    })
+
+
+@app.route('/health')
+def health_check():
+    """
+    Health check endpoint for monitoring and load balancers.
+    Returns basic application status information.
+    """
+    return jsonify({
+        'status': 'healthy',
+        'timestamp': datetime.now().isoformat(),
+        'version': config.APP_VERSION,
+        'service': config.APP_NAME
+    }), 200
+
+
+@app.route('/metrics')
+def metrics():
+    """
+    Metrics endpoint exposing application performance data.
+    Includes request counts, latencies, error rates, and per-endpoint statistics.
+    """
+    if not config.ENABLE_METRICS:
+        return jsonify({'error': 'Metrics disabled'}), 403
+    
+    return jsonify(metrics_collector.get_metrics_summary()), 200
 
 
 # Create a new task
 @app.route('/tasks', methods=['POST'])
+@track_metrics
 def create_task():
-    data = request.json
-    tasks = load_tasks()
-    task = {
-        'id': get_next_id(tasks),
-        'title': data.get('title'),
-        'description': data.get('description'),
-        'due_date': data.get('due_date'),
-        'status': data.get('status', 'pending')
-    }
-    tasks.append(task)
-    save_tasks(tasks)
-    return jsonify(task), 201
+    """Create a new task."""
+    try:
+        data = request.json
+        if not data or 'title' not in data:
+            return jsonify({'error': 'Title is required'}), 400
+        
+        task = task_service.create_task(
+            title=data.get('title'),
+            description=data.get('description'),
+            due_date=data.get('due_date'),
+            status=data.get('status', 'pending')
+        )
+        return jsonify(task), 201
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
+    except Exception as e:
+        return jsonify({'error': 'Internal server error'}), 500
 
 
 # Get all tasks
 @app.route('/tasks', methods=['GET'])
+@track_metrics
 def get_tasks():
-    tasks = load_tasks()
-    return jsonify(tasks)
+    """Retrieve all tasks."""
+    try:
+        tasks = task_service.get_all_tasks()
+        return jsonify(tasks), 200
+    except Exception as e:
+        return jsonify({'error': 'Internal server error'}), 500
 
 
 # Update a task
 @app.route('/tasks/<int:task_id>', methods=['PUT'])
+@track_metrics
 def update_task(task_id):
-    data = request.json
-    tasks = load_tasks()
-    for task in tasks:
-        if task['id'] == task_id:
-            task['title'] = data.get('title', task['title'])
-            task['description'] = data.get('description', task['description'])
-            task['due_date'] = data.get('due_date', task['due_date'])
-            task['status'] = data.get('status', task['status'])
-            save_tasks(tasks)
-            return jsonify(task)
-    return jsonify({'error': 'Task not found'}), 404
+    """Update an existing task."""
+    try:
+        data = request.json
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+        
+        task = task_service.update_task(
+            task_id=task_id,
+            title=data.get('title'),
+            description=data.get('description'),
+            due_date=data.get('due_date'),
+            status=data.get('status')
+        )
+        
+        if task is None:
+            return jsonify({'error': 'Task not found'}), 404
+        
+        return jsonify(task), 200
+    except Exception as e:
+        return jsonify({'error': 'Internal server error'}), 500
 
 
 # Delete a task
 @app.route('/tasks/<int:task_id>', methods=['DELETE'])
+@track_metrics
 def delete_task(task_id):
-    tasks = load_tasks()
-    new_tasks = [task for task in tasks if task['id'] != task_id]
-    save_tasks(new_tasks)
-    return '', 204
+    """Delete a task."""
+    try:
+        deleted = task_service.delete_task(task_id)
+        if not deleted:
+            return jsonify({'error': 'Task not found'}), 404
+        return '', 204
+    except Exception as e:
+        return jsonify({'error': 'Internal server error'}), 500
 
 
 if __name__ == '__main__':
-    # Allow host/port override via environment variables for easier deployment / LAN access
-    host = os.environ.get('TASK_API_HOST', '0.0.0.0')
-    port = int(os.environ.get('TASK_API_PORT', '5000'))
-    debug = os.environ.get('TASK_API_DEBUG', '1') == '1'
-    # Use use_reloader False to avoid duplicate processes when launched via scripts
-    app.run(host=host, port=port, debug=debug, use_reloader=False)
+    # Run the application with configuration from config.py
+    # Settings can be overridden via environment variables
+    app.run(
+        host=config.HOST,
+        port=config.PORT,
+        debug=config.DEBUG,
+        use_reloader=False  # Avoid duplicate processes when launched via scripts
+    )

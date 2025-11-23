@@ -1,0 +1,143 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "task-manager-dashboard",
+    "title": "Task Manager API - Performance Dashboard",
+    "tags": ["task-manager", "api", "performance"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 0,
+    "refresh": "10s",
+    "panels": [
+      {
+        "id": 1,
+        "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+        "type": "graph",
+        "title": "Request Rate (requests/sec)",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total[1m])",
+            "legendFormat": "{{method}} {{endpoint}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "reqps", "label": "Requests/sec" },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 2,
+        "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+        "type": "graph",
+        "title": "Average Latency (ms)",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "p95 latency",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "p50 latency",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          { "format": "ms", "label": "Latency" },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 3,
+        "gridPos": { "x": 0, "y": 8, "w": 8, "h": 8 },
+        "type": "stat",
+        "title": "Total Requests",
+        "targets": [
+          {
+            "expr": "sum(http_requests_total)",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"],
+            "fields": ""
+          }
+        }
+      },
+      {
+        "id": 4,
+        "gridPos": { "x": 8, "y": 8, "w": 8, "h": 8 },
+        "type": "stat",
+        "title": "Error Rate (%)",
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total{status=~\"5..\"}[5m])) / sum(rate(http_requests_total[5m])) * 100",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": 0, "color": "green" },
+              { "value": 1, "color": "yellow" },
+              { "value": 5, "color": "red" }
+            ]
+          }
+        }
+      },
+      {
+        "id": 5,
+        "gridPos": { "x": 16, "y": 8, "w": 8, "h": 8 },
+        "type": "stat",
+        "title": "Uptime",
+        "targets": [
+          {
+            "expr": "process_uptime_seconds",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "background",
+          "unit": "s"
+        }
+      },
+      {
+        "id": 6,
+        "gridPos": { "x": 0, "y": 16, "w": 24, "h": 8 },
+        "type": "table",
+        "title": "Endpoint Performance Breakdown",
+        "targets": [
+          {
+            "expr": "sum by (endpoint, method) (rate(http_requests_total[5m]))",
+            "format": "table",
+            "refId": "A"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {},
+              "indexByName": {},
+              "renameByName": {
+                "endpoint": "Endpoint",
+                "method": "Method",
+                "Value": "Requests/sec"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

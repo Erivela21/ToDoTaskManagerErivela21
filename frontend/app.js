@@ -19,16 +19,16 @@ const LS_ACHIEVEMENTS = 'achievementsUnlocked';
 // bumblebee.png, lockdown.png, ironhide.png, ratchet.png, shockwave.png,
 // starscream.png, soundwave.png, megatron.png, jetfire.png, optimus.png
 const ACHIEVEMENTS = [
-  { id:1, name:'Bumblebee', threshold:1, desc:'First task completed. Small but brave!', icon:'BB', img:'BUMBLEBEE.png' },
-  { id:2, name:'Lockdown', threshold:3, desc:'You are becoming a relentless hunter of tasks.', icon:'LD', img:'LOCKDOWN.png' },
-  { id:3, name:'Ironhide', threshold:5, desc:'Sturdy dedication forged.', icon:'IH', img:'IRONHIDE.png' },
-  { id:4, name:'Ratchet', threshold:8, desc:'A healer of backlog wounds.', icon:'RT', img:'RATCHET.png' },
-  { id:5, name:'Shockwave', threshold:12, desc:'Cold logic drives your output.', icon:'SH', img:'SCHOCKWAVE.png' },
-  { id:6, name:'Starscream', threshold:17, desc:'Ambition rising high (watch your ego).', icon:'SS', img:'STARSCREAM.png' },
-  { id:7, name:'Soundwave', threshold:23, desc:'Efficient data execution—superior.', icon:'SW', img:'SOUNDWAVE.png' },
-  { id:8, name:'Megatron', threshold:30, desc:'Relentless drive achieved.', icon:'MG', img:'MEGATRON.png' },
-  { id:9, name:'Jetfire', threshold:40, desc:'Ancient wisdom + velocity unlocked.', icon:'JF', img:'JETFIRE.png' },
-  { id:10, name:'Optimus Prime', threshold:55, desc:'Leadership through unwavering productivity.', icon:'OP', img:'OPTIMUSPRIME.png' }
+  { id:1, name:'Bumblebee', threshold:1, desc:'First task completed. Small but brave!', icon:'BB', img:'assets/BUMBLEBEE.png' },
+  { id:2, name:'Lockdown', threshold:3, desc:'You are becoming a relentless hunter of tasks.', icon:'LD', img:'assets/LOCKDOWN.png' },
+  { id:3, name:'Ironhide', threshold:5, desc:'Sturdy dedication forged.', icon:'IH', img:'assets/IRONHIDE.png' },
+  { id:4, name:'Ratchet', threshold:8, desc:'A healer of backlog wounds.', icon:'RT', img:'assets/RATCHET.png' },
+  { id:5, name:'Shockwave', threshold:12, desc:'Cold logic drives your output.', icon:'SH', img:'assets/SCHOCKWAVE.png' },
+  { id:6, name:'Starscream', threshold:17, desc:'Ambition rising high (watch your ego).', icon:'SS', img:'assets/STARSCREAM.png' },
+  { id:7, name:'Soundwave', threshold:23, desc:'Efficient data execution—superior.', icon:'SW', img:'assets/SOUNDWAVE.png' },
+  { id:8, name:'Megatron', threshold:30, desc:'Relentless drive achieved.', icon:'MG', img:'assets/MEGATRON.png' },
+  { id:9, name:'Jetfire', threshold:40, desc:'Ancient wisdom + velocity unlocked.', icon:'JF', img:'assets/JETFIRE.png' },
+  { id:10, name:'Optimus Prime', threshold:55, desc:'Leadership through unwavering productivity.', icon:'OP', img:'assets/OPTIMUSPRIME.png' }
 ];
 let unlockedAchievementIds = [];
 // Intel activity feed state
@@ -104,11 +104,11 @@ const SFX = new SFXManager();
 
 // ---- WAV AUDIO INTEGRATION ----
 // Provided WAV assets mapped to key events. We preload lazily on first play.
-// Files expected one level above frontend folder alongside image assets.
+// Files now in assets folder for local hosting compatibility.
 const WAV_SOURCES = {
-  delete: '../DELETE2.wav',       // task deletion
-  edited: '../EDITED.wav',        // add task or edit/save task
-  unlock: '../UNLOCKEDCHARACTER.wav' // achievement unlock
+  delete: 'assets/DELETE2.wav',       // task deletion
+  edited: 'assets/EDITED.wav',        // add task or edit/save task
+  unlock: 'assets/UNLOCKEDCHARACTER.wav' // achievement unlock
 };
 const _wavElems = {};
 function _getWav(name){

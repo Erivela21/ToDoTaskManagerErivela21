@@ -1,0 +1,35 @@
+# Prometheus Configuration for Task Manager Monitoring
+# This file configures Prometheus to scrape metrics from the Task Manager API
+
+global:
+  scrape_interval: 15s       # How often to scrape targets
+  evaluation_interval: 15s   # How often to evaluate rules
+  external_labels:
+    monitor: 'task-manager'
+    environment: 'production'
+
+# Scrape configurations
+scrape_configs:
+  # Task Manager API metrics
+  - job_name: 'task-manager-api'
+    static_configs:
+      - targets: ['localhost:5000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+# Alerting configuration (optional)
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+          # - alertmanager:9093
+
+# Rule files (optional - for advanced alerting)
+rule_files:
+  # - "alerts.yml"

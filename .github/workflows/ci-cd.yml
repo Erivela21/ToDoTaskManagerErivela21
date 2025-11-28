@@ -92,7 +92,7 @@ jobs:
       run: |
         CONTAINER_NAME="todotaskmanager-erivela21"
         RESOURCE_GROUP="BCSAI2025-DEVOPS-STUDENTS-B"
-        LOCATION="westeurope"
+        LOCATION="northeurope"
         
         echo "=========================================="
         echo "Deploying: $CONTAINER_NAME"

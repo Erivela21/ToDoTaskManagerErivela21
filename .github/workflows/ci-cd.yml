@@ -90,7 +90,7 @@ jobs:
     
     - name: Deploy to Azure Container Instances  
       run: |
-        CONTAINER_NAME="ToDoTaskManagerErivela21"
+        CONTAINER_NAME="todotaskmanager-erivela21"
         RESOURCE_GROUP="BCSAI2025-DEVOPS-STUDENTS-B"
         LOCATION="westeurope"
         
@@ -117,7 +117,7 @@ jobs:
           --memory 1 \
           --ports 5000 \
           --ip-address Public \
-          --dns-name-label todotaskmanagererivela21 \
+          --dns-name-label todotaskmanager-erivela21 \
           --location $LOCATION \
           --command-line "sh -c 'pip install flask flask-cors && python -c \"from flask import Flask, jsonify; from flask_cors import CORS; app = Flask(__name__); CORS(app); @app.route(\\\"/\\\") \ndef root(): return jsonify({\\\"message\\\":\\\"Task Manager API\\\", \\\"status\\\":\\\"running\\\"}); @app.route(\\\"/health\\\") \ndef health(): return jsonify({\\\"status\\\":\\\"healthy\\\"}); app.run(host=\\\"0.0.0.0\\\", port=5000)\"'" \
           --restart-policy Always
@@ -129,7 +129,7 @@ jobs:
         RESOURCE_GROUP="BCSAI2025-DEVOPS-STUDENTS-B"
         FQDN=$(az container show \
           --resource-group $RESOURCE_GROUP \
-          --name ToDoTaskManagerErivela21 \
+          --name todotaskmanager-erivela21 \
           --query ipAddress.fqdn \
           --output tsv)
         echo "=========================================="
@@ -147,7 +147,7 @@ jobs:
         RESOURCE_GROUP="BCSAI2025-DEVOPS-STUDENTS-B"
         FQDN=$(az container show \
           --resource-group $RESOURCE_GROUP \
-          --name ToDoTaskManagerErivela21 \
+          --name todotaskmanager-erivela21 \
           --query ipAddress.fqdn \
           --output tsv)
         

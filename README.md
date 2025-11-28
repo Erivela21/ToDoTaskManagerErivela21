@@ -2,6 +2,9 @@
 
 A Transformers-themed single-page task manager powered by a lightweight Flask API (JSON file persistence) and an animated, glassy UI.
 
+**🚀 Live Demo:** [http://task-manager-erivela21.westeurope.azurecontainer.io:5000](http://task-manager-erivela21.westeurope.azurecontainer.io:5000)  
+**📊 Status:** [![CI/CD Pipeline](https://github.com/Erivela21/ToDoTaskManagerErivela21/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/Erivela21/ToDoTaskManagerErivela21/actions/workflows/ci-cd.yml)
+
 ## Architecture Overview
 
 ![Architecture Diagram](docs/architecture_diagram.png)

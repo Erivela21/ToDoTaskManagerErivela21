@@ -65,7 +65,7 @@ jobs:
     
     - name: Build Docker image
       run: |
-        docker build -t task-manager-api:latest .
+        docker build -t task-manager-api:latest -f Dockerfile backend/
     
     - name: Test Docker image
       run: |
@@ -90,8 +90,8 @@ jobs:
     
     - name: Build and push Docker image
       run: |
-        # Build the image
-        docker build -t task-manager-backend:${{ github.sha }} .
+        # Build the image from backend directory
+        docker build -t task-manager-backend:${{ github.sha }} -f Dockerfile backend/
         docker tag task-manager-backend:${{ github.sha }} task-manager-backend:latest
     
     - name: Deploy to Azure Container Instances

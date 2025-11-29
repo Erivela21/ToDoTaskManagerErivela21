@@ -1,7 +1,5 @@
-// Dynamically determine API base: if opened via file:// or no hostname, fallback to localhost.
-// If served from a host (e.g., LAN IP), use that host with port 5000.
-const resolvedHost = (typeof location !== 'undefined' && location.hostname && location.hostname !== 'localhost') ? location.hostname : '127.0.0.1';
-const API_URL = `http://${resolvedHost}:5000/tasks`;
+// Use Azure deployed API
+const API_URL = 'http://todotaskmanager-erivela21.northeurope.azurecontainer.io:5000/tasks';
 let currentFilter = 'all';
 let lastTasksCache = [];
 // Offline support state

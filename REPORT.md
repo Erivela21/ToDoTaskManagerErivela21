@@ -2,7 +2,7 @@
 
 ## Task Manager API - DevOps Improvements
 
-**Student**: [Your Name]  
+**Student**: Enrique Rivela Gómez  
 **Course**: Software Development & DevOps  
 **Date**: November 22, 2025  
 **Assignment**: Individual Assignment 2
